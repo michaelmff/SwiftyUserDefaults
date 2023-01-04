@@ -41,7 +41,7 @@ import Foundation
 /// Defaults.launchCount += 1
 /// ```
 
-public protocol DefaultsStorage {
+public protocol DefaultsStorage: AnyObject {
 //    associatedtype Store: DefaultsKeyStore
     func hasKey<T: DefaultsSerializable>(_ key: DefaultsKey<T>) -> Bool
 //    func hasKey<T: DefaultsSerializable>(_ keyPath: KeyPath<Store, DefaultsKey<T>>) -> Bool
@@ -49,6 +49,12 @@ public protocol DefaultsStorage {
     func remove<T: DefaultsSerializable>(_ key: DefaultsKey<T>)
     
     func removeAll()
+    
+    subscript<T: DefaultsSerializable>(key: DefaultsKey<T>) -> T.T where T: OptionalType, T.T == T { get set }
+    subscript<T: DefaultsSerializable>(key: DefaultsKey<T>) -> T.T where T.T == T { get set }
+
+    func observe<T: DefaultsSerializable>(_ key: DefaultsKey<T>, options: NSKeyValueObservingOptions, handler: @escaping (DefaultsObserver<T>.Update) -> Void) -> DefaultsDisposable
+
 }
 
 @dynamicMemberLookup

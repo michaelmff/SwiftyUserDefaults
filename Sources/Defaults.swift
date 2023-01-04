@@ -59,6 +59,42 @@ public extension UserDefaults {
             removeObject(forKey: key)
         }
     }
+    
+    subscript<T: DefaultsSerializable>(key: DefaultsKey<T>) -> T.T where T: OptionalType, T.T == T {
+        get {
+            if let value = T._defaults.get(key: key._key, userDefaults: self), let _value = value as? T.T.Wrapped {
+                // swiftlint:disable:next force_cast
+                return _value as! T
+            } else if let defaultValue = key.defaultValue {
+                return defaultValue
+            } else {
+                return T.T.__swifty_empty
+            }
+        }
+        set {
+            T._defaults.save(key: key._key, value: newValue, userDefaults: self)
+        }
+    }
+    
+    subscript<T: DefaultsSerializable>(key: DefaultsKey<T>) -> T.T where T.T == T {
+        get {
+            if let value = T._defaults.get(key: key._key, userDefaults: self) {
+                return value
+            } else if let defaultValue = key.defaultValue {
+                return defaultValue
+            } else {
+                fatalError("Shouldn't happen, please report!")
+            }
+        }
+        set {
+            T._defaults.save(key: key._key, value: newValue, userDefaults: self)
+        }
+    }
+    
+    func observe<T: DefaultsSerializable>(_ key: DefaultsKey<T>, options: NSKeyValueObservingOptions = [.old, .new], handler: @escaping (DefaultsObserver<T>.Update) -> Void) -> DefaultsDisposable {
+        return DefaultsObserver(key: key, userDefaults: self, options: options, handler: handler)
+    }
+
 }
 
 internal extension UserDefaults {
