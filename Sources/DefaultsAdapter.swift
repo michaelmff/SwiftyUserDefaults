@@ -40,13 +40,24 @@ import Foundation
 ///
 /// Defaults.launchCount += 1
 /// ```
+
+public protocol DefaultsStorage {
+//    associatedtype Store: DefaultsKeyStore
+    func hasKey<T: DefaultsSerializable>(_ key: DefaultsKey<T>) -> Bool
+//    func hasKey<T: DefaultsSerializable>(_ keyPath: KeyPath<Store, DefaultsKey<T>>) -> Bool
+    
+    func remove<T: DefaultsSerializable>(_ key: DefaultsKey<T>)
+    
+    func removeAll()
+}
+
 @dynamicMemberLookup
 public struct DefaultsAdapter<KeyStore: DefaultsKeyStore> {
 
-    public let defaults: UserDefaults
+    public let defaults: any DefaultsStorage  //UserDefaults
     public let keyStore: KeyStore
 
-    public init(defaults: UserDefaults, keyStore: KeyStore) {
+    public init(defaults: any DefaultsStorage, keyStore: KeyStore) {
         self.defaults = defaults
         self.keyStore = keyStore
     }

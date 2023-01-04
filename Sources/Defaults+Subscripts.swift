@@ -24,9 +24,9 @@
 
 import Foundation
 
-public protocol DefaultsProviding {
+public protocol DefaultsProviding //: DefaultsStorage
+{
     associatedtype KeyStore: DefaultsKeyStore
-    
     subscript<T: DefaultsSerializable>(key key: DefaultsKey<T>) -> T.T where T: OptionalType, T.T == T { get nonmutating set }
     subscript<T: DefaultsSerializable>(key key: DefaultsKey<T>) -> T.T where T.T == T { get nonmutating set }
     subscript<T: DefaultsSerializable>(keyPath: KeyPath<KeyStore, DefaultsKey<T>>) -> T.T where T: OptionalType, T.T == T { get nonmutating set }

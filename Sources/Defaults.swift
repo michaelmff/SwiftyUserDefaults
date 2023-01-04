@@ -32,7 +32,11 @@ import Foundation
 ///  var Defaults = DefaultsAdapter(defaults: UserDefaults(suiteName: "com.my.app")!, keyStore: DefaultsKeys())
 ///  ~~~
 
-public var Defaults = DefaultsAdapter<DefaultsKeys>(defaults: .standard, keyStore: .init())
+public var Defaults = DefaultsAdapter<DefaultsKeys>(defaults: UserDefaults.standard, keyStore: .init())
+
+extension UserDefaults: DefaultsStorage {
+//    public typealias Store = DefaultsKeys
+}
 
 public extension UserDefaults {
 
