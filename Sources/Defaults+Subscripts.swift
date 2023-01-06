@@ -24,9 +24,9 @@
 
 import Foundation
 
-public protocol DefaultsProviding {
+public protocol DefaultsProviding //: DefaultsStorage
+{
     associatedtype KeyStore: DefaultsKeyStore
-    
     subscript<T: DefaultsSerializable>(key key: DefaultsKey<T>) -> T.T where T: OptionalType, T.T == T { get nonmutating set }
     subscript<T: DefaultsSerializable>(key key: DefaultsKey<T>) -> T.T where T.T == T { get nonmutating set }
     subscript<T: DefaultsSerializable>(keyPath: KeyPath<KeyStore, DefaultsKey<T>>) -> T.T where T: OptionalType, T.T == T { get nonmutating set }
@@ -89,40 +89,6 @@ extension DefaultsAdapter: DefaultsProviding {
         }
         nonmutating set {
             self[keyPath] = newValue
-        }
-    }
-}
-
-public extension UserDefaults {
-
-    subscript<T: DefaultsSerializable>(key: DefaultsKey<T>) -> T.T where T: OptionalType, T.T == T {
-        get {
-            if let value = T._defaults.get(key: key._key, userDefaults: self), let _value = value as? T.T.Wrapped {
-                // swiftlint:disable:next force_cast
-                return _value as! T
-            } else if let defaultValue = key.defaultValue {
-                return defaultValue
-            } else {
-                return T.T.__swifty_empty
-            }
-        }
-        set {
-            T._defaults.save(key: key._key, value: newValue, userDefaults: self)
-        }
-    }
-
-    subscript<T: DefaultsSerializable>(key: DefaultsKey<T>) -> T.T where T.T == T {
-        get {
-            if let value = T._defaults.get(key: key._key, userDefaults: self) {
-                return value
-            } else if let defaultValue = key.defaultValue {
-                return defaultValue
-            } else {
-                fatalError("Shouldn't happen, please report!")
-            }
-        }
-        set {
-            T._defaults.save(key: key._key, value: newValue, userDefaults: self)
         }
     }
 }
